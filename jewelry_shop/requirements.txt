@@ -15,7 +15,8 @@ django-allauth>=1.21.0
 
 # Cloudinary for media storage
 cloudinary>=1.33.0
-django-cloudinary-storage>=0.4.0
+django-cloudinary-storage==0.3.0
+
 
 # Environment variables management
 python-decouple>=3.8
