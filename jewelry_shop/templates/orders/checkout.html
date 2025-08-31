@@ -1,0 +1,77 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block content %}
+<main class="flex-1 px-40 py-12">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-7xl mx-auto">
+
+    <!-- LEFT -->
+    <div class="layout-content-container flex flex-col space-y-8">
+
+      <!-- User Info -->
+      <section>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Delivery Information</h2>
+        <form method="POST">
+          {% csrf_token %}
+          <div class="grid grid-cols-1 gap-6">
+            <label class="flex flex-col">
+              <p class="text-gray-700 text-sm font-medium pb-2">Receiver Name</p>
+              <input name="receiver_name" class="form-input h-12 rounded-md border-gray-300 px-3"
+                     placeholder="Enter receiver name" required />
+            </label>
+            <label class="flex flex-col">
+              <p class="text-gray-700 text-sm font-medium pb-2">Phone Number</p>
+              <input name="receiver_phone" class="form-input h-12 rounded-md border-gray-300 px-3"
+                     placeholder="Enter phone" required />
+            </label>
+            <label class="flex flex-col">
+              <p class="text-gray-700 text-sm font-medium pb-2">Delivery Address</p>
+              <textarea name="shipping_address" class="form-input rounded-md border-gray-300 px-3 h-24"
+                        placeholder="Enter full delivery address" required></textarea>
+            </label>
+          </div>
+          <!-- 👇 ye button form ke andar hona chahiye -->
+          <button type="submit"
+                  class="w-full h-12 rounded-md bg-primary text-white font-bold hover:bg-primary-700 transition"
+                  style="color: black;">
+            Pay Now (₹{{ cart.total_price }})
+          </button>
+        </form>
+      </section>
+      
+    </div>
+
+    <!-- RIGHT -->
+    <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">3. Order Summary</h2>
+      <div class="space-y-6">
+        {% for item in cart.items.all %}
+        <div class="flex items-center gap-4">
+          <div class="bg-center bg-cover rounded-md size-16" style="background-image: url('{{ item.product.image.url }}');"></div>
+          <div class="flex-1">
+            <p class="text-gray-800 font-medium">{{ item.product.name }}</p>
+            <p class="text-gray-500 text-sm">Qty: {{ item.quantity }}</p>
+          </div>
+          <p class="text-gray-800 font-medium">₹{{ item.total_price }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="border-t border-gray-200 mt-8 pt-6 space-y-4">
+        <div class="flex justify-between">
+          <p class="text-gray-600 text-sm">Subtotal</p>
+          <p class="text-gray-800 text-sm font-medium">₹{{ cart.total_price }}</p>
+        </div>
+        <div class="flex justify-between">
+          <p class="text-gray-600 text-sm">Shipping</p>
+          <p class="text-gray-800 text-sm font-medium">Free</p>
+        </div>
+        <div class="flex justify-between items-center border-t border-gray-200 pt-4 mt-4">
+          <p class="text-gray-900 font-bold text-lg">Total</p>
+          <p class="text-gray-900 font-bold text-lg">₹{{ cart.total_price }}</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
