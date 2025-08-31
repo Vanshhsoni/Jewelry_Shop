@@ -1,0 +1,31 @@
+# Django core
+Django>=4.2,<5.0
+
+# Production server
+gunicorn>=20.1.0
+
+# Database
+psycopg2-binary>=2.9.7   # PostgreSQL driver
+
+# Image handling
+Pillow>=10.0.0
+
+# Authentication
+django-allauth>=1.21.0
+
+# Cloudinary for media storage
+cloudinary>=1.33.0
+django-cloudinary-storage>=0.4.0
+
+# Environment variables management
+python-decouple>=3.8
+
+# Security & CORS (optional but recommended)
+django-cors-headers>=4.2.0
+
+# Forms & utilities
+django-crispy-forms>=1.14.0
+django-widget-tweaks>=1.5.0
+
+# Optional: for future use
+django-extensions>=3.3.1
