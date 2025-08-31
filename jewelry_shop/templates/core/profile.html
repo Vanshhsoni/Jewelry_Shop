@@ -1,0 +1,306 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+<style>
+    .profile-section {
+        padding: 24px 0;
+        text-align: center;
+    }
+    
+    .profile-name {
+        font-family: var(--heading-font);
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+    }
+    
+    .profile-email {
+        font-size: 16px;
+        color: #666;
+        margin: 0;
+    }
+    
+    .info-section {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border: 1px solid #E5E5E5;
+    }
+    
+    .section-title {
+        font-family: var(--heading-font);
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0 0 20px 0;
+        text-align: center;
+    }
+    
+    .info-item {
+        margin-bottom: 20px;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-color);
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .info-value {
+        font-size: 16px;
+        color: #666;
+        background: #F8F8F8;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid #E5E5E5;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .edit-btn {
+        background: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .edit-btn:hover {
+        background: #A89476;
+        transform: translateY(-1px);
+    }
+    
+    .edit-input {
+        width: 100%;
+        background: white;
+        border: 2px solid var(--accent-color);
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-family: var(--body-font);
+        outline: none;
+        transition: border-color 0.3s ease;
+    }
+    
+    .edit-input:focus {
+        border-color: #A89476;
+    }
+    
+    .edit-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+    }
+    
+    .save-btn, .cancel-btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .save-btn {
+        background: var(--accent-color);
+        color: white;
+    }
+    
+    .save-btn:hover {
+        background: #A89476;
+    }
+    
+    .cancel-btn {
+        background: #F3F3F3;
+        color: var(--text-color);
+    }
+    
+    .cancel-btn:hover {
+        background: #E8E8E8;
+    }
+    .spinner {
+        border: 3px solid #f3f3f3; /* light gray */
+        border-top: 3px solid white; /* spinner color */
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        animation: spin 0.8s linear infinite;
+        margin: auto;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<title>Aura | User Profile</title>
+</head>
+<body>
+    <main class="container">
+        <!-- Profile Header -->
+        <div class="profile-section">
+            <h2 class="profile-name">{{ user.username }}</h2>
+            <p class="profile-email">{{ user.email }}</p>
+        </div>  
+
+        <!-- Contact Information Section -->
+        <div class="info-section">
+            <h3 class="section-title">Contact Information</h3>
+            
+            <!-- Phone Number -->
+            <div class="info-item">
+                <label class="info-label">Phone Number</label>
+                <div class="info-value" id="phone-display">
+                    <span id="phone-text">{{ user.phone_number|default:"+91 98765 43210" }}</span>
+                    <button class="edit-btn" onclick="editPhone()">Edit</button>
+                </div>
+                <div id="phone-edit" style="display: none;">
+                    <input type="tel" class="edit-input" id="phone-input" placeholder="+91 XXXXX XXXXX">
+                    <div class="edit-actions">
+                        <button class="save-btn" onclick="savePhone()">Save</button>
+                        <button class="cancel-btn" onclick="cancelEdit('phone')">Cancel</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Shipping Address -->
+            <div class="info-item">
+                <label class="info-label">Shipping Address</label>
+                <div class="info-value" id="address-display">
+                    <span id="address-text">{{ user.address }}</span>
+                    <button class="edit-btn" onclick="editAddress()">Edit</button>
+                </div>
+                <div id="address-edit" style="display: none;">
+                    <textarea class="edit-input" id="address-input" rows="4" placeholder="Enter your complete shipping address"></textarea>
+                    <div class="edit-actions">
+                        <button class="save-btn" onclick="saveAddress()">Save</button>
+                        <button class="cancel-btn" onclick="cancelEdit('address')">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Store original values
+        let originalPhone = document.getElementById('phone-text').textContent.trim();
+        let originalAddress = document.getElementById('address-text').textContent.trim();
+    
+        // ---------- Edit Functions ----------
+        function editPhone() {
+            document.getElementById('phone-display').style.display = 'none';
+            document.getElementById('phone-edit').style.display = 'block';
+            document.getElementById('phone-input').value = originalPhone;
+            document.getElementById('phone-input').focus();
+        }
+    
+        function editAddress() {
+            document.getElementById('address-display').style.display = 'none';
+            document.getElementById('address-edit').style.display = 'block';
+            document.getElementById('address-input').value = originalAddress;
+            document.getElementById('address-input').focus();
+        }
+    
+        // ---------- Save Functions (with loading) ----------
+        function savePhone() {
+            const newPhone = document.getElementById('phone-input').value.trim();
+            if (!newPhone) {
+                alert('Please enter a valid phone number');
+                return;
+            }
+    
+            const saveBtn = document.querySelector("#phone-edit .save-btn");
+            toggleLoading(saveBtn, true);
+    
+            sendUpdate("phone_number", newPhone, function(success) {
+                toggleLoading(saveBtn, false);
+                if (success) {
+                    document.getElementById('phone-text').textContent = newPhone;
+                    originalPhone = newPhone;
+                    cancelEdit('phone');
+                } else {
+                    alert("Failed to update phone. Try again.");
+                }
+            });
+        }
+    
+        function saveAddress() {
+            const newAddress = document.getElementById('address-input').value.trim();
+            if (!newAddress) {
+                alert('Please enter a valid address');
+                return;
+            }
+    
+            const saveBtn = document.querySelector("#address-edit .save-btn");
+            toggleLoading(saveBtn, true);
+    
+            sendUpdate("address", newAddress, function(success) {
+                toggleLoading(saveBtn, false);
+                if (success) {
+                    document.getElementById('address-text').textContent = newAddress;
+                    originalAddress = newAddress;
+                    cancelEdit('address');
+                } else {
+                    alert("Failed to update address. Try again.");
+                }
+            });
+        }
+    
+        // ---------- Cancel Edit ----------
+        function cancelEdit(type) {
+            if (type === 'phone') {
+                document.getElementById('phone-display').style.display = 'flex';
+                document.getElementById('phone-edit').style.display = 'none';
+                document.getElementById('phone-input').value = originalPhone;
+            } else if (type === 'address') {
+                document.getElementById('address-display').style.display = 'flex';
+                document.getElementById('address-edit').style.display = 'none';
+                document.getElementById('address-input').value = originalAddress;
+            }
+        }
+    
+        // ---------- AJAX Request ----------
+        function sendUpdate(field, value, callback) {
+            fetch("{% url 'core:update_profile_field' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: new URLSearchParams({
+                    "field": field,
+                    "value": value
+                })
+            })
+            .then(response => response.json())
+            .then(data => callback(data.success))
+            .catch(() => callback(false));
+        }
+    
+        // ---------- Toggle Loading State ----------
+        function toggleLoading(button, isLoading) {
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML = `<div class="spinner"></div>`;
+            } else {
+                button.disabled = false;
+                button.textContent = "Save";
+            }
+        }
+    </script>
+    
+    
+</body>
+{% endblock %}

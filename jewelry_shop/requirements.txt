@@ -1,0 +1,44 @@
+# Django core
+Django==5.1.6
+
+# Production server
+gunicorn>=20.1.0
+
+# Database
+psycopg2-binary>=2.9.7
+
+# Image handling
+Pillow>=10.0.0
+
+# Authentication
+django-allauth>=1.21.0
+
+# Cloudinary for media storage
+cloudinary>=1.33.0
+django-cloudinary-storage==0.3.0
+
+# Environment variables management
+python-decouple>=3.8
+python-dotenv>=1.0
+
+# Security & CORS
+django-cors-headers>=4.2.0
+whitenoise>=6.5.0
+
+# Forms & utilities
+django-crispy-forms>=2.0
+django-widget-tweaks>=1.5.0
+
+# Optional utilities
+django-extensions>=3.3.1
+dj-database-url>=1.1.0
+
+# Payment integration
+razorpay>=1.4
+
+# JWT & cryptography
+pyjwt>=2.9.0
+cryptography>=43.0.1
+
+# Build tools
+setuptools>=75.0.0
