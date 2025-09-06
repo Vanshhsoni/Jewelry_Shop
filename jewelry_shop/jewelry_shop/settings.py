@@ -8,11 +8,6 @@ from pathlib import Path
 import cloudinary
 
 # -----------------------------
-# Custom User Model
-# -----------------------------
-AUTH_USER_MODEL = "accounts.CustomUser"
-
-# -----------------------------
 # Base Directory
 # -----------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,8 +16,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security
 # -----------------------------
 SECRET_KEY = "django-insecure-=(*&j(usdk)w194&^qj+fvg^k5c&wys7i%8g#gq$-@)sn-6%a6"
-DEBUG = True  # ⚠️ Change to False in production
+DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 ALLOWED_HOSTS = ["*"]
+
+# -----------------------------
+# Custom User Model
+# -----------------------------
+AUTH_USER_MODEL = "accounts.CustomUser"
 
 # -----------------------------
 # Installed Apps
@@ -136,15 +136,19 @@ USE_I18N = True
 USE_TZ = True
 
 # -----------------------------
-# Static & Media
+# Static Files
 # -----------------------------
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# ✅ Cloudinary handles all uploaded media (no MEDIA_URL, no MEDIA_ROOT)
+# -----------------------------
+# Media Files (Cloudinary + Fallback)
+# -----------------------------
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"  # fallback for dev
 
 # -----------------------------
 # Cloudinary Config
