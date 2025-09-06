@@ -154,8 +154,8 @@ MEDIA_URL = "/media/"
 # -----------------------------
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": "dhol8imhb",
-    "API_KEY": "616112266455922",
-    "API_SECRET": "LVW7RCMdSQzSFQHrP5di_K58p4w",
+    "API_KEY": "415897242499313",
+    "API_SECRET": "ZAV-mNXh1vu5mLSSlZS-amWvK98",
 }
 
 cloudinary.config(
