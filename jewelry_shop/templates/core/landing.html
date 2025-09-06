@@ -32,7 +32,7 @@
                  style='background-image: url("{{ product.image.url }}");'></div>
             <div class="mt-4 text-center">
               <h3 class="text-lg font-medium">{{ product.name }}</h3>
-              <p class="mt-1 text-sm text-gray-500">${{ product.price }}</p>
+              <p class="mt-1 text-sm text-gray-500">₹ {{ product.price }}</p>
             </div>
             <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
               <button class="bg-[var(--accent-color)] text-white px-6 py-2 text-sm font-medium uppercase tracking-wider">
