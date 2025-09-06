@@ -1,7 +1,4 @@
-"""
-Django settings for jewelry_shop project.
-Clean and organized with PostgreSQL (Neon) + Cloudinary setup.
-"""
+# jewelry_shop/settings.py
 
 import os
 from pathlib import Path
@@ -15,8 +12,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # -----------------------------
 # Security
 # -----------------------------
+# Note: For production, these values should be kept secret and not hardcoded.
 SECRET_KEY = "django-insecure-=(*&j(usdk)w194&^qj+fvg^k5c&wys7i%8g#gq$-@)sn-6%a6"
-DEBUG = os.getenv("DEBUG", "True").lower() == "true"
+DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 # -----------------------------
@@ -50,7 +48,7 @@ INSTALLED_APPS = [
 ]
 
 # -----------------------------
-# Razorpay
+# Razorpay (Hardcoded)
 # -----------------------------
 RAZORPAY_KEY_ID = "rzp_test_RBwsaOTbD2OwyW"
 RAZORPAY_KEY_SECRET = "R8q75A7759hCA1mpS4ewGo9C"
@@ -112,7 +110,6 @@ DATABASES = {
         "PORT": "5432",
         "OPTIONS": {
             "sslmode": "require",
-            "channel_binding": "require",
         },
     }
 }
@@ -136,35 +133,35 @@ USE_I18N = True
 USE_TZ = True
 
 # -----------------------------
-# Static Files
+# Static and Media Files
 # -----------------------------
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# -----------------------------
-# Media Files (Cloudinary + Fallback)
-# -----------------------------
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"  # fallback for dev
+# Use conditional logic to switch between local and Cloudinary storage
+if not DEBUG:
+    # Production settings: Use Cloudinary for media files
+    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+    MEDIA_URL = "/media/"
+    CLOUDINARY_STORAGE = {
+        "CLOUD_NAME": "dhol8imhb",
+        "API_KEY": "415897242499313",
+        "API_SECRET": "ZAV-mNXh1vu5mLSSlZS-amWvK98",
+    }
+    cloudinary.config(
+        cloud_name=CLOUDINARY_STORAGE["CLOUD_NAME"],
+        api_key=CLOUDINARY_STORAGE["API_KEY"],
+        api_secret=CLOUDINARY_STORAGE["API_SECRET"],
+        secure=True,
+    )
+else:
+    # Development settings: Use local file system for media files
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
 
-# -----------------------------
-# Cloudinary Config
-# -----------------------------
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": "dhol8imhb",
-    "API_KEY": "415897242499313",
-    "API_SECRET": "ZAV-mNXh1vu5mLSSlZS-amWvK98",
-}
-
-cloudinary.config(
-    cloud_name=CLOUDINARY_STORAGE["CLOUD_NAME"],
-    api_key=CLOUDINARY_STORAGE["API_KEY"],
-    api_secret=CLOUDINARY_STORAGE["API_SECRET"],
-    secure=True,
-)
 
 # -----------------------------
 # Defaults
@@ -177,3 +174,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 LOGIN_URL = "/accounts/signup/"
+
