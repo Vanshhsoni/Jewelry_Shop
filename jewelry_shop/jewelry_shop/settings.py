@@ -140,27 +140,30 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# Use conditional logic to switch between local and Cloudinary storage
-if not DEBUG:
-    # Production settings: Use Cloudinary for media files
-    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-    MEDIA_URL = "/media/"
-    CLOUDINARY_STORAGE = {
-        "CLOUD_NAME": "dhol8imhb",
-        "API_KEY": "415897242499313",
-        "API_SECRET": "ZAV-mNXh1vu5mLSSlZS-amWvK98",
-    }
-    cloudinary.config(
-        cloud_name=CLOUDINARY_STORAGE["CLOUD_NAME"],
-        api_key=CLOUDINARY_STORAGE["API_KEY"],
-        api_secret=CLOUDINARY_STORAGE["API_SECRET"],
-        secure=True,
-    )
-else:
-    # Development settings: Use local file system for media files
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-    MEDIA_URL = "/media/"
-    MEDIA_ROOT = BASE_DIR / "media"
+# -----------------------------
+# Cloudinary
+# -----------------------------
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME", "dhol8imhb"),
+    "API_KEY": os.getenv("CLOUDINARY_API_KEY", "415897242499313"),
+    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET", "ZAV-mNXh1vu5mLSSlZS-amWvK98"),
+}
+
+cloudinary.config(
+    cloud_name=CLOUDINARY_STORAGE["CLOUD_NAME"],
+    api_key=CLOUDINARY_STORAGE["API_KEY"],
+    api_secret=CLOUDINARY_STORAGE["API_SECRET"],
+    secure=True,
+)
+
+# Media Storage
+DEFAULT_FILE_STORAGE = (
+    "cloudinary_storage.storage.MediaCloudinaryStorage"
+    if not DEBUG
+    else "django.core.files.storage.FileSystemStorage"
+)
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 
 # -----------------------------
