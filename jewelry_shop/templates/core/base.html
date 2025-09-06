@@ -1,0 +1,500 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    AOS.init();
+  </script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <title>Aura - High-End Modern Jewelry</title>
+  <link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.js"></script>
+  
+  <!-- Extra CSS Block for specific pages -->
+  {% block extra_css %}{% endblock %}
+  
+  <style type="text/tailwindcss">
+    :root {
+      --background: #F9F9F9;
+      --text-color: #2C2C2C;
+      --accent-color: #BDA78B;
+      --footer-bg: #BDA78B;
+      --heading-font: 'Cormorant Garamond', serif;
+      --body-font: 'Inter', sans-serif;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: var(--body-font);
+      background-color: var(--background);
+      color: var(--text-color);
+    }
+
+    h1,h2,h3,h4,h5,h6 {
+      font-family: var(--heading-font);
+    }
+
+    .logo-placeholder {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-color), #D4C5A9);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      font-size: 18px;
+      font-family: var(--heading-font);
+      box-shadow: 0 2px 8px rgba(189,167,139,0.3);
+    }
+
+    .icon-button {
+      padding: 8px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon-button:hover {
+      background-color: rgba(189,167,139,0.1);
+      color: var(--accent-color);
+    }
+
+    /* Mobile Menu Styles */
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 280px;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      z-index: 60;
+      transition: left 0.3s ease;
+      box-shadow: 2px 0 20px rgba(0,0,0,0.15);
+      overflow-y: auto;
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .mobile-menu.open {
+      left: 0;
+    }
+
+    .mobile-menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.5);
+      z-index: 55;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-menu-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .hamburger span {
+      width: 100%;
+      height: 2px;
+      background: var(--text-color);
+      margin: 2px 0;
+      transition: 0.3s;
+      transform-origin: center;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(45deg) translate(6px, 6px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .logo-placeholder {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+      }
+      
+      .icon-button {
+        padding: 6px;
+      }
+      
+      .mobile-auth-buttons {
+        gap: 8px;
+      }
+      
+      .mobile-auth-buttons a {
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+        min-width: 60px;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .mobile-auth-buttons a {
+        padding: 6px 10px !important;
+        font-size: 11px !important;
+        min-width: 50px;
+      }
+    }
+  </style>
+</head>
+<body class="overflow-x-hidden">
+<div class="main-content relative flex size-full min-h-screen flex-col">
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+
+  <!-- Mobile Menu -->
+  <nav class="mobile-menu" id="mobileMenu">
+    <div class="p-6">
+      <!-- Close button -->
+      <div class="flex justify-between items-center mb-8">
+        <div class="flex items-center gap-3">
+          <div class="logo-placeholder">A</div>
+          <h2 class="text-xl font-bold" style="font-family: var(--heading-font);">Aura</h2>
+        </div>
+        <button onclick="toggleMobileMenu()" class="p-2 text-gray-500">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="space-y-4">
+        <a href="{% url 'core:landing' %}" class="block py-3 px-4 text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">Home</a>
+        <a href="{% url 'shop:category' %}" class="block py-3 px-4 text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">Collection</a>
+        <a href="{% url 'core:landing' %}#featured" class="block py-3 px-4 text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">Featured</a>
+        <a href="{% url 'core:landing' %}#about" class="block py-3 px-4 text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">About Us</a>        
+      </div>
+
+      <!-- Authentication Section -->
+      <div class="mt-8 pt-6 border-t border-gray-200">
+        {% if user.is_authenticated %}
+          <div class="space-y-3">
+            <a href="{% url 'core:profile' %}" class="block py-3 px-4 bg-gray-100 text-gray-800 rounded-lg font-medium">
+              {{ user.username }}
+            </a>
+            <a href="{% url 'accounts:logout' %}" class="block py-3 px-4 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+              Logout
+            </a>
+          </div>
+        {% else %}
+          <div class="space-y-3">
+            <a href="{% url 'accounts:login' %}" class="block py-3 px-4 bg-[var(--accent-color)] text-white rounded-lg text-center font-medium">
+              Login
+            </a>
+            <a href="{% url 'accounts:signup' %}" class="block py-3 px-4 border-2 border-[var(--accent-color)] text-[var(--accent-color)] rounded-lg text-center font-medium">
+              Sign Up
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Navbar -->
+  <header class="sticky top-0 z-50 flex items-center justify-between bg-[var(--background)]/90 px-4 sm:px-6 lg:px-10 py-3 sm:py-4 backdrop-blur-sm border-b border-gray-200/50">
+    <!-- Left Side: Logo + Hamburger -->
+    <div class="flex items-center gap-3 sm:gap-4">
+      <!-- Hamburger Menu (Mobile Only) -->
+      <button class="hamburger md:hidden" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      
+      <div class="logo-placeholder">C</div>
+      <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold" style="font-family: var(--heading-font);">Charvi Jewellers</h1>
+    </div>
+
+    <!-- Desktop Navigation (Hidden on Mobile) -->
+    <nav class="desktop-nav hidden md:flex flex-1 justify-center items-center gap-6 lg:gap-8">
+      <a class="text-sm font-medium hover:text-[var(--accent-color)] transition-colors" href="{% url 'core:landing' %}">Home</a>
+      <a class="text-sm font-medium hover:text-[var(--accent-color)] transition-colors" href="{% url 'shop:category' %}">Collection</a>
+      <a class="text-sm font-medium hover:text-[var(--accent-color)] transition-colors scroll-link" href="#featured">Featured</a>
+      <a class="text-sm font-medium hover:text-[var(--accent-color)] transition-colors scroll-link" href="#about">About Us</a>
+    </nav>
+    
+
+    <!-- Right Side: Action Buttons -->
+    <div class="flex items-center gap-1 sm:gap-2 md:gap-4">
+
+
+      <!-- Cart Button -->
+      <button class="icon-button relative" aria-label="Shopping Cart"onclick="window.location.href='{% url 'cart:cart_page' %}'">        
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2L3 6v14c0 1.1.9 2 2 2h14c0-1.1-.9-2-2-2H5l3-4z"></path>
+          <path d="M6 6h15l-1 7H7z"></path>
+        </svg>
+      </button>
+
+      <!-- Desktop Auth Buttons (Hidden on Mobile) -->
+      {% if user.is_authenticated %}
+        <div class="hidden md:flex items-center gap-2">
+          <a href="{% url 'core:profile' %}" class="font-medium text-sm hover:text-[var(--accent-color)] transition-colors">{{ user.username }}</a>
+          <a href="{% url 'accounts:logout' %}" class="px-3 py-1 text-sm text-gray-600 hover:text-[var(--accent-color)] transition-colors">Logout</a>
+        </div>
+      {% else %}
+        <div class="hidden md:flex items-center gap-2">
+          <a href="{% url 'accounts:login' %}" class="px-4 py-2 bg-[var(--accent-color)] text-white rounded-md hover:bg-[#a78b6b] transition-colors text-sm">Login</a>
+          <a href="{% url 'accounts:signup' %}" class="px-4 py-2 border border-[var(--accent-color)] text-[var(--accent-color)] rounded-md hover:bg-[var(--accent-color)] hover:text-white transition-colors text-sm">Signup</a>
+        </div>
+      {% endif %}
+
+      <!-- Mobile Auth Buttons (Visible only on Mobile) -->
+      {% if user.is_authenticated %}
+        <div class="flex md:hidden items-center gap-1 mobile-auth-buttons">
+          <a href="{% url 'core:profile' %}" class="px-2 py-1 bg-[var(--accent-color)] text-white rounded text-xs font-medium">Profile</a>
+        </div>
+      {% else %}
+        <div class="flex md:hidden items-center gap-1 mobile-auth-buttons">
+          <a href="{% url 'accounts:login' %}" class="px-2 py-1 bg-[var(--accent-color)] text-white rounded text-xs font-medium">Login</a>
+          <a href="{% url 'accounts:signup' %}" class="px-2 py-1 border border-[var(--accent-color)] text-[var(--accent-color)] rounded text-xs font-medium">Sign Up</a>
+        </div>
+      {% endif %}
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+<!-- Footer -->
+<footer class="text-white py-10 px-6" style="background-color: var(--footer-bg);">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      
+      <!-- Brand -->
+      <div class="sm:col-span-2">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="logo-placeholder">C</div>
+          <h3 class="text-2xl font-bold" style="font-family: var(--heading-font);">Charvi Jewellers</h3>
+        </div>
+        <p class="text-white/80 max-w-md text-sm sm:text-base">
+          Crafting timeless elegance with contemporary design. Every piece tells a story of luxury and sophistication.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h4 class="text-lg font-semibold mb-3" style="font-family: var(--heading-font);">Quick Links</h4>
+        <ul class="space-y-2 text-sm">
+          <li><button data-info="about" class="footer-link">About Us</button></li>
+          <li><button data-info="collections" class="footer-link">Collections</button></li>
+          <li><button data-info="contact" class="footer-link">Contact</button></li>
+        </ul>
+      </div>
+
+      <!-- Customer Care -->
+      <div>
+        <h4 class="text-lg font-semibold mb-3" style="font-family: var(--heading-font);">Customer Care</h4>
+        <ul class="space-y-2 text-sm">
+          <li><button data-info="shipping" class="footer-link">Shipping Info</button></li>
+          <li><button data-info="returns" class="footer-link">Returns</button></li>
+          <li><button data-info="care" class="footer-link">Care Guide</button></li>
+          <li><button data-info="warranty" class="footer-link">Warranty</button></li>
+          <li><button data-info="cancel" class="footer-link">Cancellation Policy</button></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-white/20 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-white/70 text-sm">© 2025 Charvi Jewellers. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+</div>
+<!-- Popup Card -->
+<div id="infoModal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+  <div class="bg-white text-gray-800 max-w-md w-full mx-4 rounded-2xl shadow-lg p-6 relative animate-fadeIn">
+    <button id="closeModal" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">&times;</button>
+    <h3 id="modalTitle" class="text-lg font-semibold mb-2"></h3>
+    <p id="modalContent" class="text-sm leading-relaxed"></p>
+  </div>
+</div>
+<style>
+  /* Footer links */
+  .footer-link { 
+    color: rgba(255,255,255,0.8); 
+    transition: 0.2s; 
+  }
+  .footer-link:hover { color: #fff; }
+
+  /* Modal backdrop with blur */
+  #infoModal {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  /* Popup card style */
+  #infoModal .bg-white {
+    background: rgba(255, 255, 255, 0.80); /* slight transparency */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1.5px solid #BDA78B;
+  }
+
+  /* Animation */
+  @keyframes fadeIn { 
+    from { opacity: 0; transform: scale(0.95); } 
+    to { opacity: 1; transform: scale(1); } 
+  }
+  .animate-fadeIn { 
+    animation: fadeIn 0.25s ease-out; 
+  }
+
+</style>
+
+<script>
+  document.querySelectorAll(".scroll-link").forEach(link => {
+    link.addEventListener("click", function(e) {
+      e.preventDefault();
+      const target = this.getAttribute("href");
+  
+      // agar already home page pe ho
+      if (window.location.pathname === "{% url 'core:landing' %}") {
+        const el = document.querySelector(target);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        }
+      } else {
+        // agar kisi aur page pe ho → home + hash redirect
+        window.location.href = "{% url 'core:landing' %}" + target;
+      }
+    });
+  });
+  
+  // jab home load ho aur hash ho toh smooth scroll
+  window.addEventListener("DOMContentLoaded", () => {
+    if (window.location.hash) {
+      const el = document.querySelector(window.location.hash);
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: "smooth" });
+        }, 300); // thoda wait karo render ke liye
+      }
+    }
+  });
+  </script>
+
+  
+<!-- Mobile Menu JavaScript -->
+<script>
+  
+  function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('mobileMenuOverlay');
+    const hamburger = document.getElementById('hamburgerBtn');
+    
+    const isOpen = mobileMenu.classList.contains('open');
+    
+    if (isOpen) {
+      mobileMenu.classList.remove('open');
+      overlay.classList.remove('open');
+      hamburger.classList.remove('active');
+      document.body.style.overflow = '';
+    } else {
+      mobileMenu.classList.add('open');
+      overlay.classList.add('open');
+      hamburger.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  // Close menu when clicking on links
+  document.querySelectorAll('.mobile-menu a').forEach(link => {
+    link.addEventListener('click', () => {
+      toggleMobileMenu();
+    });
+  });
+
+  // Handle window resize
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 768) {
+      const mobileMenu = document.getElementById('mobileMenu');
+      const overlay = document.getElementById('mobileMenuOverlay');
+      const hamburger = document.getElementById('hamburgerBtn');
+      
+      mobileMenu.classList.remove('open');
+      overlay.classList.remove('open');
+      hamburger.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+
+
+
+  const modal = document.getElementById("infoModal");
+  const closeModal = document.getElementById("closeModal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalContent = document.getElementById("modalContent");
+
+  const contentMap = {
+    about: { title: "About Us", text: "Charvi Jewellers blends tradition with modern artistry, crafting pieces that last generations." },
+    collections: { title: "Collections", text: "Discover our timeless creations — from bridal sets to everyday elegance." },
+    contact: { title: "Contact", text: "Reach us at +91-6367743066 or visit our flagship store for a personal consultation." },
+    shipping: { title: "Shipping Info", text: "We offer secure worldwide shipping with trusted partners. Delivery typically within 5-7 business days." },
+    returns: { title: "Returns", text: "Hassle-free returns within 14 days of purchase. Items must be unused and in original packaging." },
+    care: { title: "Care Guide", text: "Keep your jewellery shining — store separately, avoid harsh chemicals, and clean with a soft cloth." },
+    warranty: { title: "Warranty", text: "All our pieces come with a one-year warranty covering manufacturing defects." },
+    cancel: { title: "Cancellation Policy", text: "Contact us at +91-6367743066 for cancellation of your order in 6 hours after ordering." }
+  };
+
+  document.querySelectorAll(".footer-link").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const info = contentMap[btn.dataset.info];
+      modalTitle.textContent = info.title;
+      modalContent.textContent = info.text;
+      modal.classList.remove("hidden");
+    });
+  });
+
+  closeModal.addEventListener("click", () => {
+    modal.classList.add("hidden");
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) modal.classList.add("hidden");
+  });
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

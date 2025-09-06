@@ -1,0 +1,156 @@
+{% extends "core/base.html" %}
+{% block content %}
+
+<main class="flex-1">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-2 gap-12">
+
+    <div class="w-full aspect-[4/3] rounded-lg overflow-hidden shadow-lg">
+      <div class="w-full h-full bg-center bg-no-repeat bg-cover" 
+           style='background-image: url("{{ product.image.url }}");'></div>
+    </div>
+
+    <div class="flex flex-col gap-6">
+      <h1 class="text-3xl font-bold tracking-tight">{{ product.name }}</h1>
+      <p class="text-2xl text-stone-700">₹{{ product.price }}</p>
+      <p class="text-stone-600">{{ product.description }}</p>
+
+      <div class="flex items-center gap-4 mt-4">
+        <div id="cart-action" class="flex-grow">
+          {% if product.is_available %}
+            <button data-action="add" class="w-full bg-amber-900 text-white py-3 px-6 rounded-md hover:bg-amber-800 transition-colors">
+              Add to Cart
+            </button>
+          {% else %}
+            <p class="text-red-600 font-semibold">Product out of stock</p>
+          {% endif %}
+        </div>
+        
+        <div id="go-to-cart-container">
+          </div>
+      </div>
+      
+    </div>
+  </div>
+</main>
+
+<script>
+    // --- Element References and Django Variables ---
+    const cartAction = document.getElementById("cart-action");
+    const goToCartContainer = document.getElementById("go-to-cart-container");
+    
+    const productId = "{{ product.id }}";
+    const csrfToken = "{{ csrf_token }}";
+    
+    // URLs from Django
+    const addToCartUrl = "{% url 'cart:add_to_cart' %}";
+    const updateCartUrl = "{% url 'cart:update_cart_item' %}";
+    const cartDetailUrl = "{% url 'cart:cart_page' %}"; // Assumes a cart detail URL named 'cart_detail'
+    
+    // Initialize quantity from the view context
+    let quantity = {{ initial_quantity }};
+    
+    // --- A single function to update the entire UI ---
+    function updateCartUI(qty, isLoading = false) {
+        
+        // 1. Update the "Go to Cart" button (visible only if qty > 0)
+        if (qty > 0 && !isLoading) {
+            goToCartContainer.innerHTML = `
+                <a href="${cartDetailUrl}" title="Go to Cart" class="flex items-center justify-center w-12 h-12 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </a>
+            `;
+        } else {
+            goToCartContainer.innerHTML = '';
+        }
+
+        // 2. Update the main action area (button, counter, or loading state)
+        if (isLoading) {
+            cartAction.innerHTML = `
+                <div class="w-full flex justify-center items-center bg-amber-900/80 text-white py-3 px-6 rounded-md cursor-not-allowed">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                </div>
+            `;
+            return;
+        }
+
+        if (qty > 0) {
+            cartAction.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <button data-action="decrease" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors font-bold">-</button>
+                    <span class="font-bold text-lg w-8 text-center">${qty}</span>
+                    <button data-action="increase" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors font-bold">+</button>
+                </div>
+            `;
+        } else {
+            cartAction.innerHTML = `
+                <button data-action="add" class="w-full bg-amber-900 text-white py-3 px-6 rounded-md hover:bg-amber-800 transition-colors">
+                    Add to Cart
+                </button>
+            `;
+        }
+    }
+    
+    // --- Function to handle all server communication ---
+    function performCartAction(url, body) {
+        // Show loading state immediately
+        updateCartUI(quantity, true); 
+        
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": csrfToken
+            },
+            body: body.toString()
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // On success, update quantity from server and refresh UI
+                quantity = data.quantity;
+                updateCartUI(quantity, false);
+            } else {
+                // On failure, log error and revert to the previous state
+                console.error("Cart update failed:", data.error);
+                updateCartUI(quantity, false); // Removes loading spinner
+            }
+        })
+        .catch(error => {
+            // On network error, revert to previous state
+            console.error("Network error:", error);
+            updateCartUI(quantity, false);
+        });
+    }
+    
+    // --- Use Event Delegation for all clicks ---
+    // We attach the listener to the parent div to handle dynamically added buttons
+    document.querySelector('.flex.items-center.gap-4.mt-4').addEventListener("click", (e) => {
+        const action = e.target.dataset.action;
+        if (!action) return;
+    
+        if (action === "add") {
+            const body = new URLSearchParams({ product_id: productId, quantity: 1 });
+            performCartAction(addToCartUrl, body);
+        } else if (action === "increase") {
+            const body = new URLSearchParams({ product_id: productId, change: 1 });
+            performCartAction(updateCartUrl, body);
+        } else if (action === "decrease") {
+            const body = new URLSearchParams({ product_id: productId, change: -1 });
+            performCartAction(updateCartUrl, body);
+        }
+    });
+    
+    // --- Initial Render on Page Load ---
+    // Render the correct UI as soon as the page loads
+    {% if product.is_available %}
+        updateCartUI(quantity);
+    {% endif %}
+</script>
+
+{% endblock %}

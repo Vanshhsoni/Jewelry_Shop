@@ -1,0 +1,68 @@
+{% extends "core/base.html" %}
+{% block content %}
+<main class="flex-1 bg-[var(--primary-color)]">
+  <section class="py-20 px-4 sm:px-10">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-center text-[var(--text-color)] mb-8 sm:mb-12">
+        {{ category.name }}
+      </h2>
+      
+          
+      <!-- Sort Filter -->
+<!-- Sort Filter -->
+<div class="flex justify-end sm:justify-center mb-8 sm:mb-12">
+  <div class="relative w-auto">
+    <form method="get" id="sort-form">
+      <select 
+        class="appearance-none bg-white border border-[var(--primary-color)] text-[var(--text-color)] py-1.5 px-3 pr-7 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--secondary-color)]" 
+        id="sort" 
+        name="sort" 
+        onchange="this.form.submit()">
+        <option value="">Sort</option>
+        <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>Low → High</option>
+        <option value="-price" {% if request.GET.sort == '-price' %}selected{% endif %}>High → Low</option>
+      </select>
+      <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[var(--secondary-color)]">
+        <svg class="fill-current h-4 w-4" viewBox="0 0 20 20">
+          <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+        </svg>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Product Grid -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+    {% for product in products %}
+    <a href="{% url 'shop:product_detail' product.id %}" class="group block">
+      <div class="overflow-hidden rounded-lg">
+        <img 
+          src="{{ product.image.url }}" 
+          alt="{{ product.name }}" 
+          class="w-full h-auto object-cover aspect-[3/4] rounded-lg transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+      <div class="mt-4 text-center">
+        <h3 class="text-lg font-medium text-[var(--text-color)]">{{ product.name }}</h3>
+        <p class="text-[var(--secondary-color)] text-sm mt-1">${{ product.price }}</p>
+        {% if product.is_available %}
+        <span class="inline-block bg-green-100 text-green-800 text-xs font-medium mt-2 px-2.5 py-0.5 rounded-full">
+          In Stock
+        </span>
+        {% else %}
+        <span class="inline-block bg-red-100 text-red-800 text-xs font-medium mt-2 px-2.5 py-0.5 rounded-full">
+          Out of Stock
+        </span>
+        {% endif %}
+      </div>
+    </a>
+    {% empty %}
+    <p class="text-center text-gray-500 col-span-full">No products available.</p>
+    {% endfor %}
+  </div>
+  
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
