@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security
 # -----------------------------
 SECRET_KEY = "django-insecure-=(*&j(usdk)w194&^qj+fvg^k5c&wys7i%8g#gq$-@)sn-6%a6"
-DEBUG = True  # ❌ change to False in production
+DEBUG = True  # ⚠️ Change to False in production
 ALLOWED_HOSTS = ["*"]
 
 # -----------------------------
@@ -143,11 +143,11 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# ✅ Cloudinary will handle media files
+# ✅ Cloudinary handles all uploaded media
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"  # only used locally, Cloudinary is default
+# ❌ Removed MEDIA_ROOT because Cloudinary stores media remotely
 
 # -----------------------------
 # Cloudinary Config
